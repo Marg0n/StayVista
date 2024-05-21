@@ -36,8 +36,9 @@ const verifyToken = async (req, res, next) => {
   })
 }
 
-// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@main.mq0mae1.mongodb.net/?retryWrites=true&w=majority&appName=Main`
-const uri = `mongodb://localhost:27017`
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.pqvcpai.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+// const uri = `mongodb://localhost:27017`
+
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -48,6 +49,9 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    //DB connection
+    const roomsCollection = client.db('stayvistaDB').collection('rooms');
+
     // auth related api
     app.post('/jwt', async (req, res) => {
       const user = req.body
@@ -76,6 +80,19 @@ async function run() {
       } catch (err) {
         res.status(500).send(err)
       }
+    })
+
+    // Get all rooms from DB
+    app.get('/rooms', async(req, res) => {
+      const result = await roomsCollection.find().toArray();
+      res.send(result)
+    })
+
+    // Get single room data by _id
+    app.get('/room/:id', async(req, res) => {
+      const id = req.params.id
+      const result  = await roomsCollection.findOne({_id: new ObjectId(id)})
+      res.send(result)
     })
 
     // Send a ping to confirm a successful connection
