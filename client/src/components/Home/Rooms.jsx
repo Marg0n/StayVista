@@ -22,8 +22,8 @@ const Rooms = () => {
 
   const axiosSecure =useAxiosSecure();
 
-  const { data: rooms=[], isLoading} = useQuery({
-    queryKey: ['room'],
+  const { data: rooms = [], isLoading} = useQuery({
+    queryKey: ['rooms'],
     queryFn: async() => {
       const {data} = await axiosSecure.get('/rooms')
       return data
