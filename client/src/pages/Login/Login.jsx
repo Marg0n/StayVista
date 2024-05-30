@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { FcGoogle } from 'react-icons/fc'
 import useAuth from '../../hooks/useAuth';
 import { TbFidgetSpinner } from 'react-icons/tb';
@@ -9,6 +9,8 @@ const Login = () => {
 
   const { signIn, signInWithGoogle, loading, setLoading, resetPassword } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location?.state || '/'
   const [mail, setMail] = useState('');
 
   // Traditional Login
@@ -24,7 +26,7 @@ const Login = () => {
       await signIn(email, password);
 
       toast.success('Login Succesfull !');
-      navigate('/');
+      navigate(from);
     }
     catch (err) {
       console.log(err);
@@ -38,7 +40,7 @@ const Login = () => {
     try {
       setLoading(true);
       await signInWithGoogle();
-      navigate('/');
+      navigate(from);
       toast.success('Sign up Succesfull !');
     }
     catch (err) {

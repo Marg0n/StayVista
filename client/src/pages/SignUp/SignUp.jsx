@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { FcGoogle } from 'react-icons/fc'
 import useAuth from './../../hooks/useAuth';
 import axios from 'axios';
@@ -9,6 +9,8 @@ const SignUp = () => {
 
   const { createUser, signInWithGoogle, updateUserProfile, logOut, loading, setLoading } = useAuth();
   const navigate = useNavigate();
+    const location = useLocation();
+  const from = location?.state || '/'
 
   // Traditional Registration
   const handleSubmit = async (e) => {
@@ -55,7 +57,7 @@ const SignUp = () => {
     try {
       setLoading(true);
       await signInWithGoogle();
-      navigate('/');
+      navigate(from);
       toast.success('Sign up Succesfull !');
     }
     catch (err) {
