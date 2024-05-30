@@ -1,7 +1,68 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FcGoogle } from 'react-icons/fc'
+import useAuth from '../../hooks/useAuth';
+import { TbFidgetSpinner } from 'react-icons/tb';
+import toast from 'react-hot-toast';
+import { useState } from 'react';
 
 const Login = () => {
+
+  const { signIn, signInWithGoogle, loading, setLoading, resetPassword } = useAuth();
+  const navigate = useNavigate();
+  const [mail, setMail] = useState('');
+
+  // Traditional Login
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.email.value;
+    const password = form.password.value;
+
+    try {
+      setLoading(true);
+      // Login user
+      await signIn(email, password);
+
+      toast.success('Login Succesfull !');
+      navigate('/');
+    }
+    catch (err) {
+      console.log(err);
+      toast.error(err.message);
+      setLoading(false)
+    }
+  }
+
+  // Google Login
+  const handleGoogleSignin = async () => {
+    try {
+      setLoading(true);
+      await signInWithGoogle();
+      navigate('/');
+      toast.success('Sign up Succesfull !');
+    }
+    catch (err) {
+      console.log(err);
+      toast.error(err.message);
+      setLoading(false)
+    }
+  }
+
+  // Forget Password
+  const handleResetPssword = async () => {
+    if (!mail) return toast.error('Writedown your email!')
+    try {
+      await resetPassword(mail)
+      toast.success('Reset successfull! Check your email...')
+      setLoading(false)
+    }
+    catch (err) {
+      console.log(err);
+      toast.error(err.message);
+      setLoading(false)
+    }
+  }
+
   return (
     <div className='flex justify-center items-center min-h-screen'>
       <div className='flex flex-col max-w-md p-6 rounded-md sm:p-10 bg-gray-100 text-gray-900'>
@@ -14,6 +75,7 @@ const Login = () => {
         <form
           noValidate=''
           action=''
+          onSubmit={handleSubmit}
           className='space-y-6 ng-untouched ng-pristine ng-valid'
         >
           <div className='space-y-4'>
@@ -25,6 +87,7 @@ const Login = () => {
                 type='email'
                 name='email'
                 id='email'
+                onBlur={e => setMail(e.target.value)}
                 required
                 placeholder='Enter Your Email Here'
                 className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-rose-500 bg-gray-200 text-gray-900'
@@ -51,15 +114,18 @@ const Login = () => {
 
           <div>
             <button
+              disabled={loading}
               type='submit'
               className='bg-rose-500 w-full rounded-md py-3 text-white'
             >
-              Continue
+              {loading ? <TbFidgetSpinner className='animate-spin mx-auto' /> : "Login"}
             </button>
           </div>
         </form>
         <div className='space-y-1'>
-          <button className='text-xs hover:underline hover:text-rose-500 text-gray-400'>
+          <button
+            onClick={handleResetPssword}
+            className='text-xs hover:underline hover:text-rose-500 text-gray-400'>
             Forgot password?
           </button>
         </div>
@@ -70,11 +136,14 @@ const Login = () => {
           </p>
           <div className='flex-1 h-px sm:w-16 dark:bg-gray-700'></div>
         </div>
-        <div className='flex justify-center items-center space-x-2 border m-3 p-2 border-gray-300 border-rounded cursor-pointer'>
+        <button
+          disabled={loading}
+          onClick={handleGoogleSignin}
+          className='flex justify-center items-center space-x-2 border m-3 p-2 border-gray-300 border-rounded cursor-pointer disabled:cursor-not-allowed'>
           <FcGoogle size={32} />
 
           <p>Continue with Google</p>
-        </div>
+        </button>
         <p className='px-6 text-sm text-center text-gray-400'>
           Don&apos;t have an account yet?{' '}
           <Link
