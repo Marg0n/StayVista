@@ -76,22 +76,26 @@ async function run() {
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
           })
           .send({ success: true })
-        console.log('Logout successful')
+        // console.log('Logout successful')
       } catch (err) {
         res.status(500).send(err)
       }
     })
 
     // Get all rooms from DB
-    app.get('/rooms', async(req, res) => {
-      const result = await roomsCollection.find().toArray();
+    app.get('/rooms', async (req, res) => {
+      const category = req.query.category;
+      // console.log(category);
+      let query = {};
+      if (category && category!= 'null') query = { category }
+      const result = await roomsCollection.find(query).toArray();
       res.send(result)
     })
 
     // Get single room data by _id
-    app.get('/room/:id', async(req, res) => {
+    app.get('/room/:id', async (req, res) => {
       const id = req.params.id
-      const result  = await roomsCollection.findOne({_id: new ObjectId(id)})
+      const result = await roomsCollection.findOne({ _id: new ObjectId(id) })
       res.send(result)
     })
 
