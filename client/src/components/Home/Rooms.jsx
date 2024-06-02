@@ -4,7 +4,7 @@ import Container from '../Shared/Container'
 import Heading from '../Shared/Heading'
 import LoadingSpinner from '../Shared/LoadingSpinner'
 import {  useQuery } from '@tanstack/react-query'
-import useAxiosCommon from '../../hooks/useAxiosSecure'
+import useAxiosCommon from './../../hooks/useAxiosCommon';
 
 const Rooms = () => {
   // const [rooms, setRooms] = useState([])
